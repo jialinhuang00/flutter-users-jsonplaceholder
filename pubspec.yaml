@@ -1,5 +1,5 @@
 name: users
-description: "A new Flutter project."
+description: "The Flutter frontend project uses JSONPlaceholder as the REST API."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
