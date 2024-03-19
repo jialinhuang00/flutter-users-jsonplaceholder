@@ -34,7 +34,7 @@ class _UserPageState extends State<UserPage> {
   Future<void> updateUser() async {
     final userService = UserService();
     var copiedUser = widget.user;
-    copiedUser.name = nameController.text;
+    copiedUser.username = nameController.text;
     copiedUser.email = emailController.text;
     copiedUser.website = websiteController.text;
     var respondBody = await userService.updateUser(copiedUser);
@@ -45,7 +45,7 @@ class _UserPageState extends State<UserPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Update User ${copiedUser.username} Successfully!',
+            content: Text('Update ${copiedUser.name}\'s Profile Successfully!',
                 style: const TextStyle(color: Colors.black)),
             backgroundColor: const Color(0xFFDDDD25),
           ),
@@ -79,8 +79,8 @@ class _UserPageState extends State<UserPage> {
 
   AppBar getAppBar() {
     return AppBar(
-      title: Text(widget.user.name + "'s Profile"),
-      backgroundColor: Color(0XFF1a1a1a),
+      title: Text("${widget.user.name}'s Profiledsad"),
+      backgroundColor: const Color(0XFF1a1a1a),
     );
   }
 
