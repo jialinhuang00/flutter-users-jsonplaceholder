@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:users/app/data/models/user.dart';
@@ -19,6 +21,13 @@ class _UserPageState extends State<UserPage> {
   @override
   void initState() {
     super.initState();
+    initFields();
+  }
+
+  initFields() {
+    nameController.text = widget.user.username;
+    emailController.text = widget.user.email;
+    websiteController.text = widget.user.website;
   }
 
   TextEditingController nameController = TextEditingController();
@@ -27,12 +36,29 @@ class _UserPageState extends State<UserPage> {
 
   Future<void> updateUser() async {
     final userService = UserService();
-    var userData = widget.user;
-    var isSuccess = await userService.updateUser(userData);
-    if (isSuccess) {
+    var copiedUser = widget.user;
+    copiedUser.name = nameController.text;
+    copiedUser.email = emailController.text;
+    copiedUser.website = websiteController.text;
+    var respondBody = await userService.updateUser(copiedUser);
+    print(respondBody);
+    if (respondBody != null) {
       setState(() {
         isSaveSuccess = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Update User ${copiedUser.username} Successfully!',
+                style: TextStyle(color: Colors.black)),
+            backgroundColor: Color(0xFFDDDD25),
+          ),
+        );
       });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Update User ${copiedUser.username} FAILED!'),
+        ),
+      );
     }
   }
 
@@ -61,76 +87,64 @@ class _UserPageState extends State<UserPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Visibility(
-          visible: !isEditing,
-          child: Column(
-            children: [
-              Text('Username: ${widget.user.username}',
-                  style: const TextStyle(
-                    color: Color(0XFF18B6FF),
-                  )),
-              Text('Email: ${widget.user.email}',
-                  style: const TextStyle(color: Color(0XFFDCDC24))),
-              Text('Website: ${widget.user.website}',
-                  style: const TextStyle(color: Color(0XFFFA44B0))),
-            ],
+        Text('Username',
+            textAlign: TextAlign.left,
+            style: const TextStyle(
+              color: Color(0XFF18B6FF),
+            )),
+        TextField(
+          controller: nameController,
+          decoration: const InputDecoration(
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          style: TextStyle(
+            color: Colors.white,
+          ),
+          enabled: isEditing,
+        ),
+        SizedBox(height: 20),
+        Text(
+          'Email',
+          textAlign: TextAlign.left,
+          style: const TextStyle(color: Color(0XFFDCDC24)),
+        ),
+        TextField(
+          controller: emailController,
+          decoration: const InputDecoration(
+            hintStyle: TextStyle(color: Colors.grey), // 指定占位符文本的颜色为灰色
+          ),
+          style: TextStyle(color: Colors.white),
+          enabled: isEditing,
+
+        ),
+        SizedBox(height: 20),
+        Text(
+          'Website',
+          textAlign: TextAlign.left,
+          style: const TextStyle(
+            color: Color(0XFFFA44B0),
           ),
         ),
-        Visibility(
-            visible: isEditing,
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                  ),
-                  style: TextStyle(
-                    fontSize: 24,
-                  ),
-                  enabled: isEditing,
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                  ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                  enabled: isEditing,
-                ),
-                TextField(
-                  controller: websiteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Website',
-                  ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                  enabled: isEditing,
-                ),
-              ],
-            )),
+        TextField(
+          controller: websiteController,
+          decoration: const InputDecoration(
+            hintStyle: TextStyle(color: Colors.white),
+          ),
+          style: TextStyle(color: Colors.white),
+          enabled: isEditing,
+        ),
         Center(
           child: ElevatedButton(
             onPressed: () {
-              setState(() {
-                isEditing = !isEditing;
-                // 如果正在编辑，则清空文本字段
-                if (!isEditing) {
-                  nameController.clear();
-                  emailController.clear();
-                } else {
-                  nameController.text = widget.user.username;
-                  emailController.text = widget.user.email;
-                  websiteController.text = widget.user.website;
-                }
-              });
+              if (!isEditing) {
+                setState(() {
+                  isEditing = true;
+                });
+              } else {
+                updateUser();
+              }
             },
-            child: Text(isEditing ? 'Save' : 'Edit'),
+            child: Text(isEditing ? 'Save' : 'Click me to edit'),
           ),
         ),
       ],

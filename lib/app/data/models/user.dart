@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:json_annotation/json_annotation.dart';
+part 'user.g.dart';
+List<User> usersFromJson(String str) => List<User>.from(json.decode(str).map((x) => User.fromJson(x)));
 
-List<User> userFromJson(String str) => List<User>.from(json.decode(str).map((x) => User.fromJson(x)));
-
-String userToJson(List<User> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
+@JsonSerializable()
 class User {
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserToJson(this);
   int id;
   String name;
   String username;
@@ -24,28 +27,6 @@ class User {
     required this.website,
     required this.company,
   });
-
-  factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"],
-    name: json["name"],
-    username: json["username"],
-    email: json["email"],
-    address: Address.fromJson(json["address"]),
-    phone: json["phone"],
-    website: json["website"],
-    company: Company.fromJson(json["company"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "username": username,
-    "email": email,
-    "address": address.toJson(),
-    "phone": phone,
-    "website": website,
-    "company": company.toJson(),
-  };
 }
 
 class Address {
