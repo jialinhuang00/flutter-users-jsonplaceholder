@@ -5,16 +5,16 @@ import 'dart:convert';
 import 'package:users/app/data/models/user.dart';
 import 'package:users/app/data/service/userService.dart';
 import 'package:users/pages/UserPage.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
+
   final String title;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
-
-
+List<int> colors = [0xFF1beb9e,0xFFb060f9,0xFFdada24,0xFFfe44b3,0xFF18b6ff];
 class _HomePageState extends State<HomePage> {
   List<User> users = [];
   bool isLoaded = false;
@@ -42,12 +42,12 @@ class _HomePageState extends State<HomePage> {
         // appBar: getAppBar(),
         // floatingActionButton: getFAB(context),
         body: GestureDetector(
-          // onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: getWidget(),
-          ),
-        ));
+      // onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+        child: getWidget(),
+      ),
+    ));
   }
 
   Widget getWidget() {
@@ -61,17 +61,60 @@ class _HomePageState extends State<HomePage> {
       return ListView.builder(
         itemCount: users.length,
         itemBuilder: (context, index) {
+          var datum = users[index];
           return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserPage(user: users[index])),
+                MaterialPageRoute(
+                    builder: (context) => UserPage(user: users[index])),
               );
             },
             child: Card(
-              child: ListTile(
-                title: Text(users[index].name,style: const TextStyle(),),
-                subtitle: Text(users[index].username),
+              color: Color(colors[index % colors.length]),
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Name: ${datum.name}'),
+                    SizedBox(height: 8),
+                    Text('Username: ${datum.username}'),
+                    SizedBox(height: 8),
+                    Text('Email: ${datum.email}'),
+                    SizedBox(height: 8),
+                    Text('Address:'),
+                    Padding(
+                      padding: EdgeInsets.only(left: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Street:${datum.address.street}'),
+                          Text('Suite: ${datum.address.suite}'),
+                          Text('City: ${datum.address.city}'),
+                          Text('Zipcode: ${datum.address.zipcode}'),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('Phone:${datum.phone}'),
+                    SizedBox(height: 8),
+                    Text('Website: ${datum.website}'),
+                    SizedBox(height: 8),
+                    Text('Company:${datum.company}'),
+                    Padding(
+                      padding: EdgeInsets.only(left: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Name: ${datum.company.name}'),
+                          Text('Catch Phrase:${datum.company.catchPhrase}'),
+                          Text('Business:${datum.company.bs}'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

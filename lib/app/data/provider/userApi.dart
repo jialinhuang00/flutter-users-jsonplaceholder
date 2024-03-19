@@ -26,8 +26,6 @@ class UsersApi {
       },
       body: jsonEncode(data),
     );
-    print(response.bodyBytes);
-    print(response.body);
     if (response.statusCode == 200) {
       User updatedUser = User.fromJson(json.decode(response.body));
       return updatedUser;

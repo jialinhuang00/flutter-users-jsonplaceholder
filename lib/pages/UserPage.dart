@@ -15,7 +15,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  bool isSaveSuccess = false;
+  bool saving = false;
   bool isEditing = false;
 
   @override
@@ -44,7 +44,9 @@ class _UserPageState extends State<UserPage> {
     print(respondBody);
     if (respondBody != null) {
       setState(() {
-        isSaveSuccess = true;
+        saving = false;
+        isEditing = false;
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Update User ${copiedUser.username} Successfully!',
@@ -66,9 +68,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: getAppBar(),
-        // floatingActionButton: getFAB(context),
         body: GestureDetector(
-          // onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: getWidget(),
@@ -111,11 +111,10 @@ class _UserPageState extends State<UserPage> {
         TextField(
           controller: emailController,
           decoration: const InputDecoration(
-            hintStyle: TextStyle(color: Colors.grey), // 指定占位符文本的颜色为灰色
+            hintStyle: TextStyle(color: Colors.grey),
           ),
           style: TextStyle(color: Colors.white),
           enabled: isEditing,
-
         ),
         SizedBox(height: 20),
         Text(
@@ -133,17 +132,23 @@ class _UserPageState extends State<UserPage> {
           style: TextStyle(color: Colors.white),
           enabled: isEditing,
         ),
+        SizedBox(height: 20),
         Center(
           child: ElevatedButton(
-            onPressed: () {
-              if (!isEditing) {
-                setState(() {
-                  isEditing = true;
-                });
-              } else {
-                updateUser();
-              }
-            },
+            onPressed: !saving
+                ? () {
+                    if (!isEditing) {
+                      setState(() {
+                        isEditing = true;
+                      });
+                    } else {
+                      setState(() {
+                        saving = true;
+                      });
+                      updateUser();
+                    }
+                  }
+                : (){},
             child: Text(isEditing ? 'Save' : 'Click me to edit'),
           ),
         ),
