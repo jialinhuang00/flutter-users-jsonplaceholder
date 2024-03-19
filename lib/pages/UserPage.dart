@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:users/app/data/models/user.dart';
 import 'package:users/app/data/service/userService.dart';
@@ -41,7 +38,6 @@ class _UserPageState extends State<UserPage> {
     copiedUser.email = emailController.text;
     copiedUser.website = websiteController.text;
     var respondBody = await userService.updateUser(copiedUser);
-    print(respondBody);
     if (respondBody != null) {
       setState(() {
         saving = false;
@@ -50,8 +46,8 @@ class _UserPageState extends State<UserPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Update User ${copiedUser.username} Successfully!',
-                style: TextStyle(color: Colors.black)),
-            backgroundColor: Color(0xFFDDDD25),
+                style: const TextStyle(color: Colors.black)),
+            backgroundColor: const Color(0xFFDDDD25),
           ),
         );
       });
@@ -66,12 +62,17 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
     return Scaffold(
-        appBar: getAppBar(),
+        appBar: isMobile ? getAppBar() : null,
         body: GestureDetector(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: getWidget(),
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 20.0 : 40.0,
+              vertical: isMobile ? 20.0 : 40.0,
+            ),
+            child: getWidget(isMobile),
           ),
         ));
   }
@@ -83,56 +84,82 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget getWidget() {
+  Widget getWidget(bool isMobile) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Username',
+        Visibility(
+          visible: !isMobile,
+          child: Text("${widget.user.name}'s Profile",
+              textAlign: TextAlign.left,
+              style: const TextStyle(
+                fontSize: 40,
+                color: Colors.white,
+              )),
+        ),
+        const Text('Username',
             textAlign: TextAlign.left,
-            style: const TextStyle(
+            style: TextStyle(
               color: Color(0XFF18B6FF),
             )),
-        TextField(
-          controller: nameController,
-          decoration: const InputDecoration(
-            hintStyle: TextStyle(color: Colors.grey),
-          ),
-          style: TextStyle(
-            color: Colors.white,
-          ),
-          enabled: isEditing,
-        ),
-        SizedBox(height: 20),
-        Text(
+        !isEditing
+            ? Text(widget.user.username,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  color: Colors.white,
+                ))
+            : TextField(
+                controller: nameController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+        const SizedBox(height: 20),
+        const Text(
           'Email',
           textAlign: TextAlign.left,
-          style: const TextStyle(color: Color(0XFFDCDC24)),
+          style: TextStyle(color: Color(0XFFDCDC24)),
         ),
-        TextField(
-          controller: emailController,
-          decoration: const InputDecoration(
-            hintStyle: TextStyle(color: Colors.grey),
-          ),
-          style: TextStyle(color: Colors.white),
-          enabled: isEditing,
-        ),
-        SizedBox(height: 20),
-        Text(
+        !isEditing
+            ? Text(widget.user.username,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  color: Colors.white,
+                ))
+            : TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+        const SizedBox(height: 20),
+        const Text(
           'Website',
           textAlign: TextAlign.left,
-          style: const TextStyle(
+          style: TextStyle(
             color: Color(0XFFFA44B0),
           ),
         ),
-        TextField(
-          controller: websiteController,
-          decoration: const InputDecoration(
-            hintStyle: TextStyle(color: Colors.white),
-          ),
-          style: TextStyle(color: Colors.white),
-          enabled: isEditing,
-        ),
-        SizedBox(height: 20),
+        !isEditing
+            ? Text('${widget.user.website}',
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  color: Colors.white,
+                ))
+            : TextField(
+                controller: websiteController,
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white),
+                enabled: isEditing,
+              ),
+        const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
             onPressed: !saving
@@ -148,10 +175,26 @@ class _UserPageState extends State<UserPage> {
                       updateUser();
                     }
                   }
-                : (){},
+                : () {},
             child: Text(isEditing ? 'Save' : 'Click me to edit'),
           ),
         ),
+        Visibility(
+          visible: !isMobile,
+          child: TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
+            child: const Text(
+              'Back to home page',
+              style: TextStyle(
+                  fontSize: 18.0, decoration: TextDecoration.underline),
+            ),
+          ),
+        )
       ],
     );
   }
